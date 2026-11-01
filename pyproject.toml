@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=77,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evogate"
+version = "0.1.0"
+description = "A local SQL assistant with feedback-driven skills and validated version updates"
+readme = "README.md"
+license = "MIT AND CC-BY-SA-4.0"
+license-files = ["LICENSE", "src/evogate/_vendor/LICENSE-CC-BY-SA-4.0.txt", "src/evogate/_vendor/NOTICE.md"]
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "httpx>=0.28,<1",
+    "pydantic>=2,<3",
+    "PyYAML>=6,<7",
+    "sqlglot>=26,<29",
+]
+
+[project.scripts]
+evogate = "evogate.__main__:main"
+evogate-eval = "evogate.evaluation:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+evogate = ["static/*.html", "static/*.js", "static/*.css", "skills/*/SKILL.md"]
+"evogate._vendor" = ["NOTICE.md", "LICENSE-CC-BY-SA-4.0.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.9,<1"]

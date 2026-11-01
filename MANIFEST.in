@@ -1,0 +1,8 @@
+include README.md .env.example .python-version uv.lock
+recursive-include docs *.md
+recursive-include scripts *.py
+recursive-include tests *.py
+recursive-include src/evogate/static *.html *.js *.css
+recursive-include src/evogate/skills SKILL.md
+recursive-include src/evogate/_vendor *.md *.txt
+global-exclude __pycache__ *.py[cod] .DS_Store

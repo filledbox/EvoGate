@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EvoGate · SQL 工作台</title><link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <aside>
+    <a class="brand" href="/">E<span>↗</span> EvoGate</a>
+    <div class="workspace-label">SQL WORKSPACE <span>01</span></div>
+    <nav aria-label="主导航">
+      <button class="nav active" data-page="query">◈ <span>查询工作台</span><small>01</small></button>
+      <button class="nav" data-page="feedback">↳ <span>纠错记录</span><small>02</small></button>
+      <button class="nav" data-page="skills">≋ <span>Skill 版本</span><small>03</small></button>
+      <button class="nav" data-page="reports">▥ <span>效果对比</span><small>04</small></button>
+    </nav>
+    <div class="sidebar-bottom"><span class="dot"></span> 本地工作区<br><small>经验随数据库积累</small></div>
+  </aside>
+  <main>
+    <header><div><span class="breadcrumb">WORKSPACE</span><span class="slash">/</span><span id="page-name">查询工作台</span></div>
+      <div class="header-right"><span id="mode" class="badge"></span><span class="dot"></span> <span id="model-label"></span></div>
+    </header>
+    <div id="notice" role="status" hidden></div>
+    <div class="content">
+      <div class="page-heading"><div><div class="eyebrow">DATABASE INTELLIGENCE</div><h1 id="heading">让每一次查询，都有据可循。</h1><p id="description">连接业务数据，执行 SQL，把可靠的纠错沉淀为可验证的经验。</p></div><span class="edition">LOCAL<br>EDITION / 01</span></div>
+      <div class="database-bar"><label for="database">当前数据库</label><select id="database"></select><span id="source" class="badge"></span><span id="version-label"></span><span id="split-label"></span></div>
+      <section id="page-query" class="page">
+        <details class="panel"><summary>连接 SQLite 数据库与导入评测案例</summary>
+          <form id="database-form"><label class="field-label" for="new-db-id">数据库标识</label><input id="new-db-id" required pattern="[A-Za-z0-9_-]+" placeholder="my-business">
+          <label class="field-label" for="new-db-path">本机 SQLite 绝对路径</label><input id="new-db-path" required placeholder="/path/to/business.sqlite">
+          <label class="field-label" for="new-db-context">字段与业务说明</label><textarea id="new-db-context" rows="3"></textarea>
+          <button class="primary" type="submit">连接数据库</button></form>
+          <label class="field-label" for="cases-file">为当前数据库导入案例 JSON</label><input id="cases-file" type="file" accept=".json"><p class="muted">数组中的每项包含 question、reference_sql、split，split 为 training、selection 或 holdout，evidence 可选。按 SQL 模板隔离划分。</p>
+          <button class="text-button" id="import-cases">导入案例</button>
+        </details>
+        <div class="query-grid"><div>
+          <div class="panel question-panel"><div class="section-title"><h2>你想了解什么？</h2><span>01 / ASK</span></div>
+            <form id="query-form"><label class="sr-only" for="question">查询问题</label><textarea id="question" rows="4" placeholder="例如：请统计华东地区的订单数。" required></textarea>
+              <label class="field-label" for="evidence">业务说明 <span>可选</span></label><input id="evidence" placeholder="补充统计口径、字段含义或过滤条件">
+              <div class="query-actions"><label class="checkbox"><input type="checkbox" id="baseline"> 使用无 Skill 基础版</label><button class="primary" type="submit">执行查询 <span>↗</span></button></div>
+            </form>
+          </div>
+          <div class="examples"><span>从一个查询示例开始</span><div id="examples"></div></div>
+          <div id="query-result"></div>
+        </div><div class="context-column">
+          <div class="panel"><div class="section-title"><h2>数据库结构</h2><span>SCHEMA</span></div><pre id="schema"></pre></div>
+          <div class="panel skill-card"><div class="section-title"><h2>当前 SKILL.md</h2><span id="active-tag"></span></div><pre id="active-skill"></pre><button class="text-button" id="go-skills">查看版本与更新 →</button></div>
+        </div></div>
+        <div class="panel history-panel"><div class="section-title"><h2>最近查询</h2><span>QUERY HISTORY</span></div><div id="history"></div></div>
+      </section>
+      <section id="page-feedback" class="page" hidden>
+        <div class="panel"><div class="section-title"><h2>持久经验</h2><span>EXPERIENCE REPLAY</span></div><p class="muted">保留执行失败、已确认纠错和成功反例。待定或拒绝候选的经验会参与后续回放。</p><div id="experience-list"></div></div>
+        <div class="panel"><h2>纠错来源记录</h2><div id="feedback-list"></div></div>
+      </section>
+      <section id="page-skills" class="page" hidden>
+        <div class="panel"><h2>初始 Skill 与工作区分支</h2><p id="skill-binding" class="muted"></p>
+          <label class="field-label" for="branch-choice">历史工作区分支</label><select id="branch-choice"></select><button id="switch-branch" class="text-button">切换分支</button>
+          <label class="field-label" for="skill-choice">选择已导入的初始 Skill</label><select id="skill-choice"></select><button id="bind-skill" class="text-button">建立新的工作区分支</button>
+          <label class="field-label" for="skill-file">导入 Markdown Skill</label><input id="skill-file" type="file" accept=".md"><button id="import-skill" class="text-button">导入并绑定当前数据库</button>
+        </div>
+        <div class="panel"><h2>进化触发与预算</h2><form id="policy-form">
+          <label class="checkbox"><input id="auto-evolution" type="checkbox">启用后台自动进化</label>
+          <label class="field-label" for="batch-size">新增有效反馈阈值</label><input id="batch-size" type="number" min="1" max="500" value="50">
+          <label class="field-label" for="cooldown">冷却时间（秒）</label><input id="cooldown" type="number" min="0" value="3600">
+          <label class="field-label" for="daily-attempts">每库滚动 24 小时尝试上限</label><input id="daily-attempts" type="number" min="1" max="100" value="4">
+          <label class="field-label" for="attempt-calls">每次进化模型调用上限</label><input id="attempt-calls" type="number" min="1" max="10000" value="300">
+          <button class="text-button" type="submit">保存策略</button><p class="muted">同类失败的独立问题达到 3 条也可触发。后台任务使用运行时版本快照，查询可继续使用已发布版本。</p>
+        </form></div>
+        <div class="panel action-panel"><div><h2>依据经验修改工作流</h2><p>回放相关错题和成功反例，在独立选择集验证。净收益不足的候选保留为待定。</p></div><button id="optimize" class="primary">发起一次后台进化 ↗</button></div>
+        <div class="panel"><h2>进化任务</h2><div id="jobs"></div></div><div id="versions"></div>
+      </section>
+      <section id="page-reports" class="page" hidden><div class="panel action-panel"><div><h2>初始 Skill × 进化 Skill × 无 Skill</h2><p>冻结一次版本快照，在同库保留问题上对比。评测快照可恢复，日常查询和后续进化可继续。</p></div><button id="compare" class="primary">冻结快照并评测 ↗</button></div><div id="reports"></div></section>
+      <footer><span>EVOGATE / SQL ASSISTANT</span><span>查询 → 纠错 → 验证 → 更新</span></footer>
+    </div>
+  </main>
+  <div id="busy" hidden role="status"><span class="spinner"></span><div><strong id="busy-title">正在处理</strong><p>执行结果会自动保存，请保持页面打开。</p></div></div>
+  <script src="/app.js"></script>
+</body>
+</html>
